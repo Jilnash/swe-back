@@ -1,0 +1,24 @@
+server:
+    port: 8080
+
+spring:
+    application:
+        name: SWE-CSCI361
+    datasource:
+        url: jdbc:mysql://localhost:3306/swe_csci361
+        username: root
+        password: root
+        driver-class-name: com.mysql.cj.jdbc.Driver
+    jpa:
+        hibernate:
+            ddl-auto: update
+
+amazon:
+    aws:
+        access-key: ?
+        secret-key: ?
+#logging:
+#    level:
+#        org:
+#            springframework:
+#                security: DEBUG

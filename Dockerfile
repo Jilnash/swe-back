@@ -1,26 +1,15 @@
-# Use an official OpenJDK runtime as a parent image
-FROM bellsoft/liberica-openjdk-alpine:22
+FROM bellsoft/liberica-openjre-alpine:22 AS layers
+WORKDIR /application
+COPY target/*.jar app.jar
+RUN java -Djarmode=layertools -jar app.jar extract
 
-# Set the working directory in the container
-WORKDIR /app
+FROM bellsoft/liberica-openjre-alpine:22
+VOLUME /tmp
+RUN adduser -S jilnash
+USER jilnash
+COPY --from=layers /application/dependencies/ ./
+COPY --from=layers /application/spring-boot-loader/ ./
+COPY --from=layers /application/snapshot-dependencies/ ./
+COPY --from=layers /application/application/ ./
 
-# Copy the project's pom.xml and source code to the container
-COPY pom.xml /app
-COPY src /app/src
-COPY mvnw /app
-COPY .mvn /app/.mvn
-
-# Package the application using Maven
-RUN ./mvnw package
-
-# Copy the packaged JAR file to the container
-COPY target/SWE-CSCI361-0.0.1-SNAPSHOT.jar /app/SWE-CSCI361.jar
-
-# Expose port 8080
-EXPOSE 8080
-
-# Run the JAR file
-ENTRYPOINT ["java", "-jar", "/app/SWE-CSCI361.jar"]
-
-#docker build -t swe .
-#docker run -p 8080:8080 swe
+ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]

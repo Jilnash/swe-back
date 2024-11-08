@@ -61,6 +61,13 @@ public class S3Service {
         }
     }
 
+    public void deleteBucket(String bucketName) {
+        DeleteBucketRequest deleteBucketRequest = DeleteBucketRequest.builder()
+                .bucket(bucketName)
+                .build();
+        s3.deleteBucket(deleteBucketRequest);
+    }
+
     public Resource getFile(String bucketName, String key) {
 
         return new InputStreamResource(

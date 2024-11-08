@@ -142,5 +142,6 @@ public class ProductService {
     public void deleteProduct(Long id) {
         productRepo.deleteById(id);
         s3Service.deleteFiles("product-" + id);
+        s3Service.deleteBucket("product-" + id);
     }
 }

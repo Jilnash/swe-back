@@ -1,14 +1,16 @@
 package com.jilnash.swecsci361.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 
+import java.net.URL;
 import java.nio.ByteBuffer;
+import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -18,6 +20,9 @@ public class S3Service {
 
     @Autowired
     private S3Client s3;
+
+    @Autowired
+    private S3Presigner s3Presigner;
 
     public void createBucket(String bucketName) {
         CreateBucketRequest createBucketRequest = CreateBucketRequest.builder()
@@ -68,18 +73,6 @@ public class S3Service {
         s3.deleteBucket(deleteBucketRequest);
     }
 
-    public Resource getFile(String bucketName, String key) {
-
-        return new InputStreamResource(
-                s3.getObject(
-                        GetObjectRequest.builder()
-                                .bucket(bucketName)
-                                .key(key)
-                                .build()
-                )
-        );
-    }
-
     public List<String> getFilesNames(String bucketName) {
 
         return s3.listObjectsV2(
@@ -87,5 +80,41 @@ public class S3Service {
                         .bucket(bucketName)
                         .build()
         ).contents().stream().map(S3Object::key).collect(Collectors.toList());
+    }
+
+    public URL getFileURL(String bucketName, String key) {
+
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                .bucket(bucketName)
+                .key(key)
+                .build();
+
+        GetObjectPresignRequest getObjectPresignRequest = GetObjectPresignRequest.builder()
+                .signatureDuration(Duration.ofMinutes(10))
+                .getObjectRequest(getObjectRequest)
+                .build();
+
+        return s3Presigner.presignGetObject(getObjectPresignRequest).url();
+    }
+
+    public List<URL> getFileURLs(String bucketName) {
+
+        return s3.listObjectsV2(
+                ListObjectsV2Request.builder()
+                        .bucket(bucketName)
+                        .build()
+        ).contents().stream().map(s3Object -> {
+            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(s3Object.key())
+                    .build();
+
+            GetObjectPresignRequest getObjectPresignRequest = GetObjectPresignRequest.builder()
+                    .signatureDuration(Duration.ofMinutes(10))
+                    .getObjectRequest(getObjectRequest)
+                    .build();
+
+            return s3Presigner.presignGetObject(getObjectPresignRequest).url();
+        }).collect(Collectors.toList());
     }
 }

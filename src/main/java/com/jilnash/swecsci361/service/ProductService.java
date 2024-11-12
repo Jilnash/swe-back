@@ -1,6 +1,8 @@
 package com.jilnash.swecsci361.service;
 
 import com.jilnash.swecsci361.dto.ProductCreateDTO;
+import com.jilnash.swecsci361.dto.ProductListItemDTO;
+import com.jilnash.swecsci361.dto.ProductResponseDTO;
 import com.jilnash.swecsci361.dto.ProductUpdateDTO;
 import com.jilnash.swecsci361.model.Product;
 import com.jilnash.swecsci361.repo.ProductRepo;
@@ -9,10 +11,10 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.URL;
 import java.sql.Date;
 import java.util.List;
 
@@ -31,7 +33,7 @@ public class ProductService {
         this.s3Service = s3Service;
     }
 
-    public List<Product> getProducts(String sort, String order) {
+    public List<ProductListItemDTO> getProducts(String sort, String order) {
 
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Product> query = cb.createQuery(Product.class);
@@ -60,20 +62,42 @@ public class ProductService {
             query.orderBy(cb.desc(product.get(sort)));
         }
 
-        return entityManager.createQuery(query).getResultList();
+        return entityManager.createQuery(query).getResultList().stream()
+                .map(p ->
+                        ProductListItemDTO.builder()
+                                .name(p.getName())
+                                .category(p.getCategory())
+                                .price(p.getPrice())
+                                .unit(p.getUnit())
+                                .quantity(p.getQuantity())
+                                .description(p.getDescription())
+                                .imageURL(s3Service.getFileURL("product-" + p.getId(), "0").toString())
+                                .build()
+                ).toList();
     }
 
     public Product getProduct(Long id) {
         return productRepo.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
     }
 
-    public List<String> getProductImagesNames(Long id) {
-        return s3Service.getFilesNames("product-" + id);
-    }
-
-    public Resource getProductImage(Long id, String fileName) {
-
-        return s3Service.getFile("product-" + id, fileName);
+    public ProductResponseDTO getProductDTO(Long id) {
+        return productRepo.findById(id)
+                .map(p -> ProductResponseDTO.builder()
+                        .id(p.getId())
+                        .name(p.getName())
+                        .category(p.getCategory())
+                        .price(p.getPrice())
+                        .unit(p.getUnit())
+                        .quantity(p.getQuantity())
+                        .description(p.getDescription())
+                        .farmId(p.getFarmId())
+                        .imageUrls(s3Service.getFileURLs("product-" + p.getId()).stream()
+                                .map(URL::toString)
+                                .toList()
+                        )
+                        .build()
+                )
+                .orElseThrow(() -> new RuntimeException("Product not found"));
     }
 
     public Boolean createProduct(List<MultipartFile> images, ProductCreateDTO productDTO) {
@@ -123,6 +147,10 @@ public class ProductService {
                         .updatedAt(new Date(System.currentTimeMillis()))
                         .build()
         );
+    }
+
+    public List<URL> getProductImages(Long id) {
+        return s3Service.getFileURLs("product-" + id);
     }
 
     public void updateProductImages(Long id, List<MultipartFile> images) {

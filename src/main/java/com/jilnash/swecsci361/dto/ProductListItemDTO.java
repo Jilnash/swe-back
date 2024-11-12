@@ -1,17 +1,10 @@
 package com.jilnash.swecsci361.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.util.List;
+import lombok.*;
 
 @Builder
 @Data
-public class ProductResponseDTO {
-
-    private Long id;
+public class ProductListItemDTO {
 
     private String name;
 
@@ -27,5 +20,5 @@ public class ProductResponseDTO {
 
     private String farmId;
 
-    private List<String> imageUrls;
+    private String imageURL;
 }

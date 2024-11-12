@@ -35,7 +35,7 @@ public class ProductController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getProduct(@PathVariable Long id) {
-        return ResponseEntity.ok(productService.getProduct(id));
+        return ResponseEntity.ok(productService.getProductDTO(id));
     }
 
     @DeleteMapping ("/{id}")
@@ -44,16 +44,9 @@ public class ProductController {
         return ResponseEntity.ok("Product deleted successfully");
     }
 
-    @GetMapping("/{id}/images/names")
-    public ResponseEntity<?> getProductImagesNames(@PathVariable Long id) {
-
-        return ResponseEntity.ok(productService.getProductImagesNames(id));
-    }
-
-    @GetMapping("/{id}/images/{fileName}")
-    public ResponseEntity<?> getProductImages(@PathVariable Long id, @PathVariable String fileName) {
-
-        return ResponseEntity.ok(productService.getProductImage(id, fileName));
+    @GetMapping("/{id}/images")
+    public ResponseEntity<?> getProductImages(@PathVariable Long id) {
+        return ResponseEntity.ok(productService.getProductImages(id));
     }
 
     @PostMapping(consumes = {"application/octet-stream", "multipart/form-data"})

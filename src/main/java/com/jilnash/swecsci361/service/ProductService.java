@@ -65,13 +65,18 @@ public class ProductService {
         return entityManager.createQuery(query).getResultList().stream()
                 .map(p ->
                         ProductListItemDTO.builder()
+                                .id(p.getId())
                                 .name(p.getName())
                                 .category(p.getCategory())
                                 .price(p.getPrice())
                                 .unit(p.getUnit())
                                 .quantity(p.getQuantity())
                                 .description(p.getDescription())
-                                .imageURL(s3Service.getFileURL("product-" + p.getId(), "0").toString())
+                                .imageURL(
+                                        s3Service.getFileURL(
+                                                "product-" + p.getId(),
+                                                s3Service.getFirstFileName("product-" + p.getId())
+                                        ).toString())
                                 .build()
                 ).toList();
     }

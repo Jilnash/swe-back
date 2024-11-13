@@ -12,7 +12,6 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.time.Duration;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,7 +36,7 @@ public class S3Service {
         for (MultipartFile f : files) {
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(bucketName)
-                    .key(String.format(String.valueOf(i++), Objects.requireNonNull(f.getContentType()).split("/")[1]))
+                    .key(i++ + "." + f.getContentType().split("/")[1])
                     .build();
 
             s3.putObject(
@@ -73,13 +72,19 @@ public class S3Service {
         s3.deleteBucket(deleteBucketRequest);
     }
 
-    public List<String> getFilesNames(String bucketName) {
+    public String getFirstFileName(String bucketName) {
 
-        return s3.listObjectsV2(
+        List<S3Object> objects = s3.listObjectsV2(
                 ListObjectsV2Request.builder()
                         .bucket(bucketName)
+                        .maxKeys(1)
                         .build()
-        ).contents().stream().map(S3Object::key).collect(Collectors.toList());
+        ).contents();
+
+        if (objects.isEmpty())
+            return null;
+
+        return objects.get(0).key();
     }
 
     public URL getFileURL(String bucketName, String key) {
@@ -87,6 +92,7 @@ public class S3Service {
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                 .bucket(bucketName)
                 .key(key)
+                .responseContentDisposition("inline")
                 .build();
 
         GetObjectPresignRequest getObjectPresignRequest = GetObjectPresignRequest.builder()
@@ -107,6 +113,7 @@ public class S3Service {
             GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                     .bucket(bucketName)
                     .key(s3Object.key())
+                    .responseContentDisposition("inline")
                     .build();
 
             GetObjectPresignRequest getObjectPresignRequest = GetObjectPresignRequest.builder()

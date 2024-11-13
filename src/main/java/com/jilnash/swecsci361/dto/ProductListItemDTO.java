@@ -6,6 +6,8 @@ import lombok.*;
 @Data
 public class ProductListItemDTO {
 
+    private Long id;
+
     private String name;
 
     private String category;

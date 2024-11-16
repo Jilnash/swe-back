@@ -177,4 +177,12 @@ public class ProductService {
         s3Service.deleteFiles("product-" + id);
         s3Service.deleteBucket("product-" + id);
     }
+
+    public Boolean checkAvailability(Long id, Double quantity) {
+        return productRepo.existsByIdAndQuantityGreaterThan(id, quantity);
+    }
+
+    public void reduceQuantity(Long id, Double quantity) {
+        productRepo.reduceQuantity(id, quantity);
+    }
 }

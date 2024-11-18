@@ -1,7 +1,6 @@
 package com.jilnash.swecsci361.service;
 
 import com.jilnash.swecsci361.dto.OrderDTO;
-import com.jilnash.swecsci361.dto.OrderProductDTO;
 import com.jilnash.swecsci361.model.Order;
 import com.jilnash.swecsci361.model.Product;
 import com.jilnash.swecsci361.model.SoldProduct;
@@ -70,6 +69,16 @@ public class OrderService {
                 throw new RuntimeException("Product does not exist or quantity exceeded");
         });
 
+        // Setting selling price for each product
+        orderDto.getProducts().forEach(orderProductDto ->
+                orderProductDto.setSoldPrice(
+                        productService.getProductPriceForUser(
+                                orderProductDto.getProductId(),
+                                orderDto.getBuyerId()
+                        )
+                )
+        );
+
         // Create order
         Order order = new Order();
 
@@ -91,15 +100,15 @@ public class OrderService {
             productService.reduceQuantity(orderProductDto.getProductId(), orderProductDto.getQuantity());
             Product product = productService.getProduct(orderProductDto.getProductId());
 
-            SoldProduct soldProduct = SoldProduct.builder()
-                    .name(product.getName())
-                    .category(product.getCategory())
-                    .soldPrice(orderProductDto.getSoldPrice())
-                    .quantity(orderProductDto.getQuantity())
-                    .order(finalOrder)
-                    .build();
-
-            soldProductRepo.save(soldProduct);
+            // Create then save sold product
+            soldProductRepo.save(
+                    SoldProduct.builder()
+                            .name(product.getName())
+                            .category(product.getCategory())
+                            .soldPrice(orderProductDto.getSoldPrice())
+                            .quantity(orderProductDto.getQuantity())
+                            .order(finalOrder)
+                            .build());
         });
     }
 

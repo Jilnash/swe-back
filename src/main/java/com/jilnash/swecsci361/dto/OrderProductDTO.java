@@ -15,7 +15,5 @@ public class OrderProductDTO {
     @Min(value = 0, message = "Quantity should be greater than 0")
     private Double quantity;
 
-    @NotNull(message = "Sold price is required")
-    @Min(value = 0, message = "Sold price should be greater than 0")
     private Double soldPrice;
 }

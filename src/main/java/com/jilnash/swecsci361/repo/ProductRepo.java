@@ -17,4 +17,7 @@ public interface ProductRepo extends JpaRepository<Product, Long> {
     @Transactional
     @Query("UPDATE Product p SET p.quantity = p.quantity - :quantity WHERE p.id = :id")
     void reduceQuantity(@Param("id") Long id, @Param("quantity") Double quantity);
+
+    @Query("SELECT p.price FROM Product p WHERE p.id = :id")
+    Double getPriceById(Long id);
 }

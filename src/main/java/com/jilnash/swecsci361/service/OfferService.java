@@ -1,23 +1,22 @@
 package com.jilnash.swecsci361.service;
 
 import com.jilnash.swecsci361.dto.OfferDTO;
+import com.jilnash.swecsci361.model.Product;
 import com.jilnash.swecsci361.model.ProductOffer;
 import com.jilnash.swecsci361.repo.OfferRepo;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OfferService {
 
     private final OfferRepo offerRepo;
 
-    private final ProductService productService;
-
-    public OfferService(OfferRepo offerRepo, ProductService productService) {
+    public OfferService(OfferRepo offerRepo) {
         this.offerRepo = offerRepo;
-        this.productService = productService;
     }
 
     public List<ProductOffer> getOffers(String userId, Boolean isAccepted, Long productId) {
@@ -33,13 +32,15 @@ public class OfferService {
 
     public ProductOffer createOffer(OfferDTO offerDTO) {
 
-        return ProductOffer.builder()
-                .userId(offerDTO.getUserId())
-                .product(productService.getProduct(offerDTO.getProductId()))
-                .price(offerDTO.getPrice())
-                .message(offerDTO.getMessage())
-                .expirationDate(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7))
-                .build();
+        return offerRepo.save(
+                ProductOffer.builder()
+                        .userId(offerDTO.getUserId())
+                        .product(Product.builder().id(offerDTO.getProductId()).build())
+                        .price(offerDTO.getPrice())
+                        .message(offerDTO.getMessage())
+                        .expirationDate(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7))
+                        .build()
+        );
     }
 
     public void acceptOffer(Long offerId, Boolean isAccepted) {
@@ -58,5 +59,12 @@ public class OfferService {
         offerRepo.delete(
                 offerRepo.findById(offerId).orElseThrow(() -> new RuntimeException("Offer not found"))
         );
+    }
+
+    public Optional<Double> getOfferPrice(Long productId, String userId) {
+        return offerRepo
+                .getProductOfferByUserIdAndProduct_IdAndIsAcceptedAndExpirationDateGreaterThan
+                        (userId, productId, true, new Date())
+                .map(ProductOffer::getPrice);
     }
 }

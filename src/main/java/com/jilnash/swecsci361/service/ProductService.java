@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.net.URL;
 import java.sql.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductService {
@@ -25,12 +26,15 @@ public class ProductService {
 
     private final S3Service s3Service;
 
+    private final OfferService offerService;
+
     @PersistenceContext
     private EntityManager entityManager;
 
-    public ProductService(ProductRepo productRepo, S3Service s3Service) {
+    public ProductService(ProductRepo productRepo, S3Service s3Service, OfferService offerService) {
         this.productRepo = productRepo;
         this.s3Service = s3Service;
+        this.offerService = offerService;
     }
 
     public List<ProductListItemDTO> getProducts(String sort, String order) {
@@ -184,5 +188,10 @@ public class ProductService {
 
     public void reduceQuantity(Long id, Double quantity) {
         productRepo.reduceQuantity(id, quantity);
+    }
+
+    public Double getProductPriceForUser(Long id, String userId) {
+
+        return offerService.getOfferPrice(id, userId).orElseGet(() -> productRepo.getPriceById(id));
     }
 }

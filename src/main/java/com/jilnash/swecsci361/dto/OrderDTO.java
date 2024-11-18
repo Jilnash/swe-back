@@ -10,8 +10,6 @@ import java.util.List;
 @Data
 public class OrderDTO {
 
-    @NotNull(message = "Buyer id is required")
-    @NotEmpty(message = "Buyer id is required")
     private String buyerId;
 
     @Valid

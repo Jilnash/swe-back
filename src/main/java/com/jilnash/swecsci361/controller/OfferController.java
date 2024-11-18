@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.sql.Date;
+
 @RestController
 @RequestMapping("/api/offers")
 public class OfferController {
@@ -25,11 +27,12 @@ public class OfferController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getOffers(@RequestParam String userId,
-                                       @RequestParam Boolean isAccepted,
-                                       @RequestParam Long productId) {
+    public ResponseEntity<?> getOffers(@RequestParam(required = false) String userId,
+                                       @RequestParam(required = false) Boolean isAccepted,
+                                       @RequestParam(required = false) Long productId,
+                                       @RequestParam(required = false) Boolean isExpired) {
 
-        return ResponseEntity.ok(offerService.getOffers(userId, isAccepted, productId));
+        return ResponseEntity.ok(offerService.getOffers(userId, isAccepted, productId, isExpired));
     }
 
     @PostMapping

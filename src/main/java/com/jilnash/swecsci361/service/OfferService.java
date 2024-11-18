@@ -1,9 +1,15 @@
 package com.jilnash.swecsci361.service;
 
 import com.jilnash.swecsci361.dto.OfferDTO;
-import com.jilnash.swecsci361.model.Product;
 import com.jilnash.swecsci361.model.ProductOffer;
+import com.jilnash.swecsci361.model.Product;
 import com.jilnash.swecsci361.repo.OfferRepo;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -15,19 +21,40 @@ public class OfferService {
 
     private final OfferRepo offerRepo;
 
-    public OfferService(OfferRepo offerRepo) {
+    @PersistenceContext
+    private final EntityManager entityManager;
+
+    public OfferService(OfferRepo offerRepo, EntityManager entityManager) {
         this.offerRepo = offerRepo;
+        this.entityManager = entityManager;
     }
 
-    public List<ProductOffer> getOffers(String userId, Boolean isAccepted, Long productId) {
+    public List<ProductOffer> getOffers(String userId, Boolean isAccepted, Long productId, Boolean isExpired) {
 
-        if (userId != null && isAccepted != null && productId != null) {
-            return offerRepo.findAllByUserIdAndIsAccepted(userId, isAccepted);
-        } else if (productId != null) {
-            return offerRepo.findAllByProduct_IdInAndIsAccepted(List.of(productId), isAccepted);
-        } else {
-            return offerRepo.findAll();
-        }
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<ProductOffer> query = cb.createQuery(ProductOffer.class);
+        Root<ProductOffer> order = query.from(ProductOffer.class);
+
+        Predicate predicate = cb.conjunction();
+
+        if (userId != null)
+            predicate = cb.and(predicate, cb.equal(order.get("userId"), userId));
+
+        if (isAccepted != null)
+            predicate = cb.and(predicate, cb.equal(order.get("isAccepted"), isAccepted));
+
+        if (productId != null)
+            predicate = cb.and(predicate, cb.equal(order.get("product").get("id"), productId));
+
+        if (isExpired != null)
+            if (isExpired)
+                predicate = cb.and(predicate, cb.lessThanOrEqualTo(order.get("expirationDate"), new Date()));
+            else
+                predicate = cb.and(predicate, cb.greaterThanOrEqualTo(order.get("expirationDate"), new Date()));
+
+        query.where(predicate);
+
+        return entityManager.createQuery(query).getResultList();
     }
 
     public ProductOffer createOffer(OfferDTO offerDTO) {

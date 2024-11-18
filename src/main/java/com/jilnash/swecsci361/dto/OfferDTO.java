@@ -18,8 +18,6 @@ public class OfferDTO {
     @Min(value = 0, message = "Price must be greater than 0")
     private Double price;
 
-    @NotNull(message = "User id is required")
-    @NotEmpty(message = "User id is required")
     private String userId;
 
     @NotNull(message = "Message is required")

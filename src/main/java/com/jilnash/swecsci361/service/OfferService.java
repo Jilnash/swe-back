@@ -72,13 +72,19 @@ public class OfferService {
 
     public void acceptOffer(Long offerId, Boolean isAccepted) {
 
-        ProductOffer offer = offerRepo
-                .findById(offerId)
-                .orElseThrow(() -> new RuntimeException("Offer not found"));
-
-        offer.setIsAccepted(isAccepted);
-
-        offerRepo.save(offer);
+        offerRepo.findById(offerId).ifPresentOrElse(
+                offer -> {
+                    if (isAccepted) {
+                        offer.setIsAccepted(true);
+                        offerRepo.save(offer);
+                    } else {
+                        offerRepo.delete(offer);
+                    }
+                },
+                () -> {
+                    throw new RuntimeException("Offer not found");
+                }
+        );
     }
 
     public void deleteOffer(Long offerId) {
@@ -89,9 +95,13 @@ public class OfferService {
     }
 
     public Optional<Double> getOfferPrice(Long productId, String userId) {
+
         return offerRepo
                 .getProductOfferByUserIdAndProduct_IdAndIsAcceptedAndExpirationDateGreaterThan
                         (userId, productId, true, new Date())
-                .map(ProductOffer::getPrice);
+                .map(offer -> {
+                    offerRepo.delete(offer);
+                    return offer.getPrice();
+                });
     }
 }

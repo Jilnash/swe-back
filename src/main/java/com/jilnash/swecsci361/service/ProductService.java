@@ -1,15 +1,13 @@
 package com.jilnash.swecsci361.service;
 
-import com.jilnash.swecsci361.dto.ProductCreateDTO;
-import com.jilnash.swecsci361.dto.ProductListItemDTO;
-import com.jilnash.swecsci361.dto.ProductResponseDTO;
-import com.jilnash.swecsci361.dto.ProductUpdateDTO;
+import com.jilnash.swecsci361.dto.*;
 import com.jilnash.swecsci361.model.Product;
 import com.jilnash.swecsci361.repo.ProductRepo;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,28 +35,28 @@ public class ProductService {
         this.offerService = offerService;
     }
 
-    public List<ProductListItemDTO> getProducts(String sort, String order) {
+    public List<ProductListItemDTO> getProducts(String sort, String order, Filter filter) {
 
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Product> query = cb.createQuery(Product.class);
         Root<Product> product = query.from(Product.class);
-//
-//        Predicate predicate = cb.conjunction();
-//
-//        if (filter.getName() != null) {
-//            predicate = cb.and(predicate, cb.like(product.get("name"), "%" + filter.getName() + "%"));
-//        }
-//        if (filter.getCategory() != null) {
-//            predicate = cb.and(predicate, cb.equal(product.get("category"), filter.getCategory()));
-//        }
-//        if (filter.getMinPrice() != null) {
-//            predicate = cb.and(predicate, cb.greaterThanOrEqualTo(product.get("price"), filter.getMinPrice()));
-//        }
-//        if (filter.getMaxPrice() != null) {
-//            predicate = cb.and(predicate, cb.lessThanOrEqualTo(product.get("price"), filter.getMaxPrice()));
-//        }
-//
-//        query.where(predicate);
+
+        Predicate predicate = cb.conjunction();
+
+        if (filter.getName() != null) {
+            predicate = cb.and(predicate, cb.like(product.get("name"), "%" + filter.getName() + "%"));
+        }
+        if (filter.getCategory() != null) {
+            predicate = cb.and(predicate, cb.equal(product.get("category"), filter.getCategory()));
+        }
+        if (filter.getMinPrice() != null) {
+            predicate = cb.and(predicate, cb.greaterThanOrEqualTo(product.get("price"), filter.getMinPrice()));
+        }
+        if (filter.getMaxPrice() != null) {
+            predicate = cb.and(predicate, cb.lessThanOrEqualTo(product.get("price"), filter.getMaxPrice()));
+        }
+
+        query.where(predicate);
 
         if ("asc".equalsIgnoreCase(order)) {
             query.orderBy(cb.asc(product.get(sort)));
@@ -76,11 +74,11 @@ public class ProductService {
                                 .unit(p.getUnit())
                                 .quantity(p.getQuantity())
                                 .description(p.getDescription())
-                                .imageURL(
-                                        s3Service.getFileURL(
-                                                "product-" + p.getId(),
-                                                s3Service.getFirstFileName("product-" + p.getId())
-                                        ).toString())
+//                                .imageURL(
+//                                        s3Service.getFileURL(
+//                                                "product-" + p.getId(),
+//                                                s3Service.getFirstFileName("product-" + p.getId())
+//                                        ).toString())
                                 .build()
                 ).toList();
     }
@@ -192,6 +190,8 @@ public class ProductService {
 
     public Double getProductPriceForUser(Long id, String userId) {
 
+        //get offer price if exists
+        //else get product price
         return offerService.getOfferPrice(id, userId).orElseGet(() -> productRepo.getPriceById(id));
     }
 }

@@ -1,5 +1,6 @@
 package com.jilnash.swecsci361.controller;
 
+import com.jilnash.swecsci361.dto.Filter;
 import com.jilnash.swecsci361.dto.ProductCreateDTO;
 import com.jilnash.swecsci361.dto.ProductUpdateDTO;
 import com.jilnash.swecsci361.service.ProductService;
@@ -25,12 +26,14 @@ public class ProductController {
         this.simpMessagingTemplate = simpMessagingTemplate;
     }
 
-    @GetMapping
+    @PostMapping
     public ResponseEntity<?> getProducts(@Validated
                                          @RequestParam(defaultValue = "updatedAt")
                                          @Pattern(regexp = "updatedAt|price|popularity") String sort,
-                                         @RequestParam(defaultValue = "desc") @Pattern(regexp = "asc|desc") String order) {
-        return ResponseEntity.ok(productService.getProducts(sort, order));
+                                         @RequestParam(defaultValue = "desc") @Pattern(regexp = "asc|desc") String order,
+                                         @Validated @RequestBody(required = false) Filter filter) {
+
+        return ResponseEntity.ok(productService.getProducts(sort, order, filter));
     }
 
     @GetMapping("/{id}")

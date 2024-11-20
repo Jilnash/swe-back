@@ -44,6 +44,12 @@ public class ProductController {
     @DeleteMapping ("/{id}")
     public ResponseEntity<?> deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
+
+        simpMessagingTemplate.convertAndSend(
+                "/topic/products" + id,
+                "delete"
+        );
+
         return ResponseEntity.ok("Product deleted successfully");
     }
 

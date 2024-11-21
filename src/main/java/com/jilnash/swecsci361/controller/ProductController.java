@@ -46,7 +46,7 @@ public class ProductController {
         productService.deleteProduct(id);
 
         simpMessagingTemplate.convertAndSend(
-                "/topic/products" + id,
+                "/topic/products/" + id,
                 "delete"
         );
 

@@ -1,14 +1,12 @@
 package com.jilnash.swecsci361.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -35,6 +33,9 @@ public class Product {
     private String description;
 
     private String farmId;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "product", cascade = CascadeType.REMOVE)
+    private List<ProductOffer> productOffers;
 
     @CreationTimestamp
     private Date createdAt;

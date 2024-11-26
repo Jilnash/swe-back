@@ -54,10 +54,4 @@ public class OrderController {
         orderService.createOrder(orderDto);
         return ResponseEntity.ok("Order created");
     }
-
-    @PutMapping("/{id}/status")
-    public ResponseEntity<?> updateStatus(@PathVariable Long id, @RequestBody String string) {
-        orderService.updateStatus(id, string);
-        return ResponseEntity.ok("Order status updated");
-    }
 }

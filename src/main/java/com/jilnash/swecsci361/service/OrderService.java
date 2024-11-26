@@ -83,7 +83,6 @@ public class OrderService {
         Order order = new Order();
 
         order.setBuyerId(orderDto.getBuyerId());
-        order.setStatus("CREATED");
         order.setTotalPrice(
                 orderDto.getProducts().stream()
                         .map(productDto -> productDto.getSoldPrice() * productDto.getQuantity())
@@ -107,12 +106,9 @@ public class OrderService {
                             .category(product.getCategory())
                             .soldPrice(orderProductDto.getSoldPrice())
                             .quantity(orderProductDto.getQuantity())
+                            .status("ORDERED")
                             .order(finalOrder)
                             .build());
         });
-    }
-
-    public void updateStatus(Long id, String status) {
-        orderRepo.updateStatusById(id, status);
     }
 }

@@ -33,4 +33,6 @@ public class ProductCreateDTO {
 
     @NotNull(message = "Description is required")
     private String description;
+
+    private String farmId;
 }

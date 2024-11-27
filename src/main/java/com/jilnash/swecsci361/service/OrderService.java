@@ -104,6 +104,7 @@ public class OrderService {
                     SoldProduct.builder()
                             .name(product.getName())
                             .category(product.getCategory())
+                            .farmId(product.getFarmId())
                             .soldPrice(orderProductDto.getSoldPrice())
                             .quantity(orderProductDto.getQuantity())
                             .status("ORDERED")

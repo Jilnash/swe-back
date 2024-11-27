@@ -1,5 +1,6 @@
 package com.jilnash.swecsci361.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -34,6 +35,7 @@ public class Product {
 
     private String farmId;
 
+    @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "product", cascade = CascadeType.REMOVE)
     private List<ProductOffer> productOffers;
 

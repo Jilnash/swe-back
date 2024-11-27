@@ -49,6 +49,9 @@ public class ProductService {
         if (filter.getCategory() != null) {
             predicate = cb.and(predicate, cb.equal(product.get("category"), filter.getCategory()));
         }
+        if (filter.getFarmId() != null) {
+            predicate = cb.and(predicate, cb.equal(product.get("farmId"), filter.getFarmId()));
+        }
         if (filter.getMinPrice() != null) {
             predicate = cb.and(predicate, cb.greaterThanOrEqualTo(product.get("price"), filter.getMinPrice()));
         }
@@ -123,6 +126,7 @@ public class ProductService {
                         .unit(productDTO.getUnit())
                         .quantity(productDTO.getQuantity())
                         .description(productDTO.getDescription())
+                        .farmId(productDTO.getFarmId())
                         .build()
         ).getId();
 

@@ -45,11 +45,12 @@ public class OrderController {
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        orderDto.setBuyerId(
-                new RestTemplate().exchange(
-                        "http://92.46.74.132:8888/user/me", HttpMethod.GET, entity, User.class
-                ).getBody().getUuid()
-        );
+        User user = new RestTemplate().exchange(
+                "http://92.46.74.132:8888/user/me", HttpMethod.GET, entity, User.class
+        ).getBody();
+
+        orderDto.setBuyerId(user.getUuid());
+        orderDto.setBuyerName(user.getFirst_name() + " " + user.getLast_name());
 
         orderService.createOrder(orderDto);
         return ResponseEntity.ok("Order created");

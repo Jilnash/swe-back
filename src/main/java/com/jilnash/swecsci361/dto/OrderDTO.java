@@ -12,6 +12,8 @@ public class OrderDTO {
 
     private String buyerId;
 
+    private String buyerName;
+
     @Valid
     @NotNull(message = "Products are required")
     @NotEmpty(message = "Products are required")

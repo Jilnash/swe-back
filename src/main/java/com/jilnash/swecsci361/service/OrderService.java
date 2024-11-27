@@ -83,6 +83,7 @@ public class OrderService {
         Order order = new Order();
 
         order.setBuyerId(orderDto.getBuyerId());
+        order.setBuyerName(orderDto.getBuyerName());
         order.setTotalPrice(
                 orderDto.getProducts().stream()
                         .map(productDto -> productDto.getSoldPrice() * productDto.getQuantity())

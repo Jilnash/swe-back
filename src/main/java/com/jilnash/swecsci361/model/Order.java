@@ -24,6 +24,8 @@ public class Order {
 
     private String buyerId;
 
+    private String buyerName;
+
     private Double totalPrice;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.REMOVE)

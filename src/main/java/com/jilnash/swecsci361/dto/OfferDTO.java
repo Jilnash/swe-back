@@ -20,6 +20,8 @@ public class OfferDTO {
 
     private String userId;
 
+    private String buyerName;
+
     @NotNull(message = "Message is required")
     @NotEmpty(message = "Message is required")
     private String message;

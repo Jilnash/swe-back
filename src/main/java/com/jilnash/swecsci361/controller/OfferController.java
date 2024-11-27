@@ -42,12 +42,12 @@ public class OfferController {
         headers.set("Authorization", "Bearer " + request.getHeader("Authorization").substring(7));
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
+        User user = new RestTemplate().exchange(
+                "http://92.46.74.132:8888/user/me", HttpMethod.GET, entity, User.class
+        ).getBody();
 
-        offerDTO.setUserId(
-                new RestTemplate().exchange(
-                        "http://92.46.74.132:8888/user/me", HttpMethod.GET, entity, User.class
-                ).getBody().getUuid()
-        );
+        offerDTO.setUserId(user.getUuid());
+        offerDTO.setBuyerName(user.getFirst_name() + " " + user.getLast_name());
 
         return ResponseEntity.ok(offerService.createOffer(offerDTO));
     }

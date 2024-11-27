@@ -23,6 +23,8 @@ public class ProductOffer {
 
     private String userId;
 
+    private String buyerName;
+
     private Double price;
 
     private Boolean isAccepted;

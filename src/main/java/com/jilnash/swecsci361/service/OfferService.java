@@ -62,6 +62,7 @@ public class OfferService {
         return offerRepo.save(
                 ProductOffer.builder()
                         .userId(offerDTO.getUserId())
+                        .buyerName(offerDTO.getBuyerName())
                         .product(Product.builder().id(offerDTO.getProductId()).build())
                         .price(offerDTO.getPrice())
                         .message(offerDTO.getMessage())

@@ -22,5 +22,7 @@ public class ProductListItemDTO {
 
     private String farmId;
 
+    private String farmName;
+
     private String imageURL;
 }

@@ -35,4 +35,6 @@ public class ProductCreateDTO {
     private String description;
 
     private String farmId;
+
+    private String farmName;
 }

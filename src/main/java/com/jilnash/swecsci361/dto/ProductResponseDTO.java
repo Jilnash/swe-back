@@ -27,5 +27,7 @@ public class ProductResponseDTO {
 
     private String farmId;
 
+    private String farmName;
+
     private List<String> imageUrls;
 }

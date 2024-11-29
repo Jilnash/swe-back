@@ -35,6 +35,8 @@ public class Product {
 
     private String farmId;
 
+    private String farmName;
+
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "product", cascade = CascadeType.REMOVE)
     private List<ProductOffer> productOffers;

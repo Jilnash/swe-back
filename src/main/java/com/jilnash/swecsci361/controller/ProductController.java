@@ -50,7 +50,7 @@ public class ProductController {
         return ResponseEntity.ok(productService.getProductDTO(id));
     }
 
-    @DeleteMapping ("/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
 
@@ -78,11 +78,12 @@ public class ProductController {
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        productDTO.setFarmId(
-                new RestTemplate().exchange(
-                        "http://92.46.74.132:8888/user/me", HttpMethod.GET, entity, User.class
-                ).getBody().getUuid()
-        );
+        User user = new RestTemplate().exchange(
+                "http://92.46.74.132:8888/user/me", HttpMethod.GET, entity, User.class
+        ).getBody();
+
+        productDTO.setFarmId(user.getUuid());
+        productDTO.setFarmName(user.getFirst_name() + " " + user.getLast_name());
 
         return ResponseEntity.ok(productService.createProduct(images, productDTO));
     }

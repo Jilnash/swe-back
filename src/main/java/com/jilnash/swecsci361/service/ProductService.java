@@ -77,6 +77,8 @@ public class ProductService {
                                 .unit(p.getUnit())
                                 .quantity(p.getQuantity())
                                 .description(p.getDescription())
+                                .farmId(p.getFarmId())
+                                .farmName(p.getFarmName())
 //                                .imageURL(
 //                                        s3Service.getFileURL(
 //                                                "product-" + p.getId(),
@@ -101,6 +103,7 @@ public class ProductService {
                         .quantity(p.getQuantity())
                         .description(p.getDescription())
                         .farmId(p.getFarmId())
+                        .farmName(p.getFarmName())
                         .imageUrls(List.of()
 //                                s3Service.getFileURLs("product-" + p.getId()).stream()
 //                                .map(URL::toString)

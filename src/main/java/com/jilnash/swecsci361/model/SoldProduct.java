@@ -27,6 +27,10 @@ public class SoldProduct {
 
     private String farmId;
 
+    private String buyerId;
+
+    private String buyerName;
+
     private String status;
 
     private Double soldPrice;

@@ -1,8 +1,8 @@
 package com.jilnash.swecsci361.service;
 
 import com.jilnash.swecsci361.dto.OfferDTO;
-import com.jilnash.swecsci361.model.ProductOffer;
 import com.jilnash.swecsci361.model.Product;
+import com.jilnash.swecsci361.model.ProductOffer;
 import com.jilnash.swecsci361.repo.OfferRepo;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -29,7 +29,7 @@ public class OfferService {
         this.entityManager = entityManager;
     }
 
-    public List<ProductOffer> getOffers(String userId, Boolean isAccepted, Long productId, Boolean isExpired) {
+    public List<ProductOffer> getOffers(String userId, Boolean isAccepted, Long productId, Boolean isExpired, String farmerId) {
 
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<ProductOffer> query = cb.createQuery(ProductOffer.class);
@@ -45,6 +45,9 @@ public class OfferService {
 
         if (productId != null)
             predicate = cb.and(predicate, cb.equal(order.get("product").get("id"), productId));
+
+        if (farmerId != null)
+            predicate = cb.and(predicate, cb.equal(order.get("product").get("farmId"), farmerId));
 
         if (isExpired != null)
             if (isExpired)

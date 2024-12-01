@@ -1,5 +1,6 @@
 package com.jilnash.swecsci361.controller;
 
+import com.jilnash.swecsci361.service.BuyerDashboard;
 import com.jilnash.swecsci361.service.FarmerDashboard;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ public class DashBoardController {
 
     private final FarmerDashboard farmerDashboard;
 
-//    private final BuyerDashboard buyerDashboard;
+    private final BuyerDashboard buyerDashboard;
 
     @GetMapping("/farmer")
     public ResponseEntity<?> getFarmerDashboard(@RequestParam String farmerId,
@@ -27,11 +28,11 @@ public class DashBoardController {
         return ResponseEntity.ok(farmerDashboard.getDashboard(farmerId, from, to));
     }
 
-//    @GetMapping("/buyer")
-//    public ResponseEntity<?> getBuyerDashboard(@RequestParam String buyerId,
-//                                               @RequestParam(required = false) Date from,
-//                                               @RequestParam(required = false) Date to) {
-//
-//        return ResponseEntity.ok(buyerDashboard.getDashboard(buyerId, from, to));
-//    }
+    @GetMapping("/buyer")
+    public ResponseEntity<?> getBuyerDashboard(@RequestParam String buyerId,
+                                               @RequestParam(required = false) Date from,
+                                               @RequestParam(required = false) Date to) {
+
+        return ResponseEntity.ok(buyerDashboard.getDashboard(buyerId, from, to));
+    }
 }

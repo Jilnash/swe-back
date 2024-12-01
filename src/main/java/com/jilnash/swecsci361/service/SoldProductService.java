@@ -25,7 +25,7 @@ public class SoldProductService {
         this.soldProductRepo = soldProductRepo;
     }
 
-    public List<SoldProduct> getSoldProducts(String farmId, String status, Date startDate, Date endDate) {
+    public List<SoldProduct> getSoldProducts(String farmId, String status, Date startDate, Date endDate, String buyerId) {
 
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<SoldProduct> query = cb.createQuery(SoldProduct.class);
@@ -38,6 +38,9 @@ public class SoldProductService {
         }
         if (status != null && !status.isEmpty()) {
             predicate = cb.and(predicate, cb.equal(root.get("status"), status));
+        }
+        if (buyerId != null && !buyerId.isEmpty()) {
+            predicate = cb.and(predicate, cb.equal(root.get("buyerId"), buyerId));
         }
         if (startDate != null) {
             predicate = cb.and(predicate, cb.greaterThanOrEqualTo(root.get("soldDate"), startDate));

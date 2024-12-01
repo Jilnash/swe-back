@@ -1,6 +1,7 @@
 package com.jilnash.swecsci361.service;
 
 import com.jilnash.swecsci361.model.SoldProduct;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
@@ -10,19 +11,16 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-public class FarmerDashboard {
+@RequiredArgsConstructor
+public class BuyerDashboard {
 
     private final SoldProductService soldProductService;
 
-    public FarmerDashboard(SoldProductService soldProductService) {
-        this.soldProductService = soldProductService;
-    }
-
-    public Map<String, Object> getDashboard(String farmerId, Date from, Date to) {
+    public Map<String, Object> getDashboard(String buyerId, Date from, Date to) {
 
         Map<String, Object> dashboard = new HashMap<>();
 
-        List<SoldProduct> soldProducts = soldProductService.getSoldProducts(farmerId, null, from, to, null);
+        List<SoldProduct> soldProducts = soldProductService.getSoldProducts(null, null, from, to, buyerId);
 
 
         Map<String, List<SoldProduct>> groupedSoldProducts = soldProducts.stream()
@@ -31,10 +29,10 @@ public class FarmerDashboard {
         Map<String, Double> productQuantities = groupedSoldProducts.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().stream().mapToDouble(SoldProduct::getQuantity).sum()));
 
-        Map<String, Integer> totalSolds = groupedSoldProducts.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().size()));
+        Map<String, Integer> totalBoughts = groupedSoldProducts.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().size()));
 
         // calculate total income
-        dashboard.put("income", soldProducts.stream().mapToDouble(sp -> sp.getSoldPrice() * sp.getQuantity()).sum());
+        dashboard.put("expenditure", soldProducts.stream().mapToDouble(sp -> sp.getSoldPrice() * sp.getQuantity()).sum());
 
         // calculate total quantity of each product
         dashboard.put("productQuantities", productQuantities);
@@ -43,10 +41,10 @@ public class FarmerDashboard {
         dashboard.put("totalQuantity", productQuantities.values().stream().reduce(0.0, Double::sum));
 
         // calculate total sold quantity of each product
-        dashboard.put("totalSolds", totalSolds);
+        dashboard.put("totalBoughts", totalBoughts);
 
         // calculate total sold quantity
-        dashboard.put("totalSold", totalSolds.values().stream().reduce(0, Integer::sum));
+        dashboard.put("totalBoughts", totalBoughts.values().stream().reduce(0, Integer::sum));
 
         return dashboard;
     }

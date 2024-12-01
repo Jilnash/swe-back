@@ -15,7 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.net.URL;
 import java.sql.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ProductService {
@@ -79,11 +78,11 @@ public class ProductService {
                                 .description(p.getDescription())
                                 .farmId(p.getFarmId())
                                 .farmName(p.getFarmName())
-//                                .imageURL(
-//                                        s3Service.getFileURL(
-//                                                "product-" + p.getId(),
-//                                                s3Service.getFirstFileName("product-" + p.getId())
-//                                        ).toString())
+                                .imageURL(
+                                        s3Service.getFileURL(
+                                                "product-" + p.getId(),
+                                                s3Service.getFirstFileName("product-" + p.getId())
+                                        ).toString())
                                 .build()
                 ).toList();
     }
@@ -104,10 +103,10 @@ public class ProductService {
                         .description(p.getDescription())
                         .farmId(p.getFarmId())
                         .farmName(p.getFarmName())
-                        .imageUrls(List.of()
-//                                s3Service.getFileURLs("product-" + p.getId()).stream()
-//                                .map(URL::toString)
-//                                .toList()
+                        .imageUrls(
+                                s3Service.getFileURLs("product-" + p.getId()).stream()
+                                        .map(URL::toString)
+                                        .toList()
                         )
                         .build()
                 )

@@ -2,9 +2,7 @@ package com.jilnash.swecsci361.controller;
 
 import com.jilnash.swecsci361.model.SoldProduct;
 import com.jilnash.swecsci361.service.SoldProductService;
-import jakarta.validation.constraints.Pattern;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
@@ -26,7 +24,7 @@ public class SoldProductController {
                                              @RequestParam(required = false) Date from,
                                              @RequestParam(required = false) Date to) {
 
-        return soldProductService.getSoldProducts(farmId, status, from, to);
+        return soldProductService.getSoldProducts(farmId, status, from, to, null);
     }
 
     @PatchMapping("/{id}/status")
